@@ -42,6 +42,17 @@ contract Sablier is ISablier, ReentrancyGuard, CarefulMath {
     }
 
     /**
+     * @dev Throws if the caller is not the recipient of the stream.
+     */
+    modifier onlyRecipient(uint256 streamId) {
+        require(
+            msg.sender == streams[streamId].sender || msg.sender == streams[streamId].recipient,
+            "caller is not the sender or the recipient of the stream"
+        );
+        _;
+    }
+
+    /**
      * @dev Throws if the provided id does not point to a valid stream.
      */
     modifier streamExists(uint256 streamId) {
@@ -258,6 +269,47 @@ contract Sablier is ISablier, ReentrancyGuard, CarefulMath {
         if (streams[streamId].remainingBalance == 0) delete streams[streamId];
 
         IERC20(stream.tokenAddress).safeTransfer(stream.recipient, amount);
+        emit WithdrawFromStream(streamId, stream.recipient, amount);
+        return true;
+    }
+
+
+    /**
+     * @notice Withdraws from the contract to the recipient's account.
+     * @dev Throws if the id does not point to a valid stream.
+     *  Throws if the caller is not the sender or the recipient of the stream.
+     *  Throws if the amount exceeds the available balance.
+     *  Throws if there is a token transfer failure.
+     * @param streamId The id of the stream to withdraw tokens from.
+     * @param amount The amount of tokens to withdraw.
+     * @param duration Duration of stake
+     */
+    function withdrawFromStreamAndStake(uint256 streamId, uint256 amount, address pool, uint256 duration, address receiver)
+        external
+        nonReentrant
+        streamExists(streamId)
+        onlyRecipient(streamId)
+        returns (bool)
+    {
+        require(amount > 0, "amount is zero");
+        Types.Stream memory stream = streams[streamId];
+
+        uint256 balance = balanceOf(streamId, stream.recipient);
+        require(balance >= amount, "amount exceeds the available balance");
+
+        MathError mathErr;
+        (mathErr, streams[streamId].remainingBalance) = subUInt(stream.remainingBalance, amount);
+        /**
+         * `subUInt` can only return MathError.INTEGER_UNDERFLOW but we know that `remainingBalance` is at least
+         * as big as `amount`.
+         */
+        assert(mathErr == MathError.NO_ERROR);
+
+        if (streams[streamId].remainingBalance == 0) delete streams[streamId];
+
+        IERC20(stream.tokenAddress).approve(pool, amount);
+        ITimeLockPool(pool).deposit(amount, duration, receiver);
+
         emit WithdrawFromStream(streamId, stream.recipient, amount);
         return true;
     }
