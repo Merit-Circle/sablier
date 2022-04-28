@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@sablier/shared-contracts/compound/CarefulMath.sol";
 
 import "./interfaces/ISablier.sol";
+import "./interfaces/ITimeLockPool.sol";
 import "./Types.sol";
 
 /**
