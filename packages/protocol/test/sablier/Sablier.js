@@ -4,6 +4,7 @@ const shouldBehaveLikeSablier = require("./Sablier.behavior");
 const ERC20Mock = artifacts.require("./ERC20Mock.sol");
 const NonStandardERC20 = artifacts.require("./NonStandardERC20.sol");
 const Sablier = artifacts.require("./Sablier.sol");
+const TimeLockPoolMock = artifacts.require("./mocks/TimeLockPoolMock.sol");
 
 ERC20Mock.numberFormat = "BigNumber";
 NonStandardERC20.numberFormat = "BigNumber";
@@ -12,7 +13,7 @@ Sablier.numberFormat = "BigNumber";
 const { STANDARD_SALARY } = devConstants;
 
 contract("Sablier", function sablier([alice, bob, carol, eve]) {
-  beforeEach(async function() {
+  beforeEach(async function () {
     const opts = { from: alice };
     this.token = await ERC20Mock.new(opts);
     await this.token.mint(alice, STANDARD_SALARY.multipliedBy(3).toString(10), opts);
@@ -21,6 +22,8 @@ contract("Sablier", function sablier([alice, bob, carol, eve]) {
     this.nonStandardERC20Token.mint(alice, STANDARD_SALARY.toString(10), opts);
 
     this.sablier = await Sablier.new(opts);
+
+    this.timeLockPool = await TimeLockPoolMock.new(this.token.address, opts);
   });
 
   shouldBehaveLikeSablier(alice, bob, carol, eve);
