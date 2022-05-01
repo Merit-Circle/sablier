@@ -19,7 +19,6 @@ function runTests() {
             withdrawalAmount,
             this.timeLockPool.address,
             this.duration,
-            this.recipient,
             this.opts,
           ),
           "amount exceeds the available balance",
@@ -38,7 +37,6 @@ function runTests() {
             withdrawalAmount,
             this.timeLockPool.address,
             this.duration,
-            this.recipient,
             this.opts,
           );
           const newBalance = await this.token.balanceOf(this.recipient);
@@ -52,7 +50,6 @@ function runTests() {
             withdrawalAmount,
             this.timeLockPool.address,
             this.duration,
-            this.recipient,
             this.opts,
           );
           truffleAssert.eventEmitted(result, "WithdrawFromStream");
@@ -65,7 +62,6 @@ function runTests() {
             withdrawalAmount,
             this.timeLockPool.address,
             this.duration,
-            this.recipient,
             this.opts,
           );
           const newBalance = await this.sablier.balanceOf(this.streamId, this.recipient, this.opts);
@@ -86,7 +82,6 @@ function runTests() {
               withdrawalAmount,
               this.timeLockPool.address,
               this.duration,
-              this.recipient,
               this.opts,
             ),
             "amount exceeds the available balance",
@@ -107,7 +102,6 @@ function runTests() {
               withdrawalAmount,
               this.timeLockPool.address,
               this.duration,
-              this.recipient,
               this.opts,
             );
             const newBalance = await this.token.balanceOf(this.recipient);
@@ -126,7 +120,6 @@ function runTests() {
               withdrawalAmount,
               this.timeLockPool.address,
               this.duration,
-              this.recipient,
               this.opts,
             );
             truffleAssert.eventEmitted(result, "WithdrawFromStream");
@@ -139,7 +132,6 @@ function runTests() {
               withdrawalAmount,
               this.timeLockPool.address,
               this.duration,
-              this.recipient,
               this.opts,
             );
             const newBalance = await this.sablier.balanceOf(this.streamId, this.recipient);
@@ -163,7 +155,6 @@ function runTests() {
               withdrawalAmount,
               this.timeLockPool.address,
               this.duration,
-              this.recipient,
               this.opts,
             );
 
@@ -183,7 +174,6 @@ function runTests() {
               withdrawalAmount,
               this.timeLockPool.address,
               this.duration,
-              this.recipient,
               this.opts,
             );
             truffleAssert.eventEmitted(result, "WithdrawFromStream");
@@ -195,7 +185,6 @@ function runTests() {
               withdrawalAmount,
               this.timeLockPool.address,
               this.duration,
-              this.recipient,
               this.opts,
             );
             await truffleAssert.reverts(this.sablier.getStream(this.streamId), "stream does not exist");
@@ -213,7 +202,6 @@ function runTests() {
               withdrawalAmount,
               this.timeLockPool.address,
               this.duration,
-              this.recipient,
               this.opts,
             ),
             "amount exceeds the available balance",
@@ -233,7 +221,6 @@ function runTests() {
           withdrawalAmount,
           this.timeLockPool.address,
           this.duration,
-          this.recipient,
           this.opts,
         ),
         "amount is zero",
@@ -306,7 +293,7 @@ function shouldBehaveLikeERC1620WithdrawFromStreamAndStake(alice, bob, eve) {
     it("reverts", async function () {
       const streamId = new BigNumber(419863);
       await truffleAssert.reverts(
-        this.sablier.withdrawFromStreamAndStake(streamId, FIVE_UNITS, ZERO_ADDRESS, 6, recipient, opts),
+        this.sablier.withdrawFromStreamAndStake(streamId, FIVE_UNITS, ZERO_ADDRESS, 6, opts),
         "stream does not exist",
       );
     });
