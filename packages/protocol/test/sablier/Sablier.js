@@ -24,6 +24,7 @@ contract("Sablier", function sablier([alice, bob, carol, eve]) {
     this.sablier = await Sablier.new(opts);
 
     this.timeLockPool = await TimeLockPoolMock.new(this.token.address, opts);
+    await this.sablier.setStakingPool(this.timeLockPool.address);
   });
 
   shouldBehaveLikeSablier(alice, bob, carol, eve);

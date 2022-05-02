@@ -1,5 +1,4 @@
 const { devConstants, mochaContexts } = require("@sablier/dev-utils");
-const { ZERO_ADDRESS } = require("@sablier/dev-utils/lib/constants");
 const BigNumber = require("bignumber.js");
 const dayjs = require("dayjs");
 const truffleAssert = require("truffle-assertions");
@@ -14,13 +13,7 @@ function runTests() {
 
       it("reverts", async function () {
         await truffleAssert.reverts(
-          this.sablier.withdrawFromStreamAndStake(
-            this.streamId,
-            withdrawalAmount,
-            this.timeLockPool.address,
-            this.duration,
-            this.opts,
-          ),
+          this.sablier.withdrawFromStreamAndStake(this.streamId, withdrawalAmount, this.duration, this.opts),
           "amount exceeds the available balance",
         );
       });
@@ -32,13 +25,7 @@ function runTests() {
 
         it("withdraws from the stream", async function () {
           const balance = await this.token.balanceOf(this.recipient);
-          await this.sablier.withdrawFromStreamAndStake(
-            this.streamId,
-            withdrawalAmount,
-            this.timeLockPool.address,
-            this.duration,
-            this.opts,
-          );
+          await this.sablier.withdrawFromStreamAndStake(this.streamId, withdrawalAmount, this.duration, this.opts);
           const newBalance = await this.token.balanceOf(this.recipient);
 
           newBalance.should.be.bignumber.equal(balance);
@@ -48,7 +35,6 @@ function runTests() {
           const result = await this.sablier.withdrawFromStreamAndStake(
             this.streamId,
             withdrawalAmount,
-            this.timeLockPool.address,
             this.duration,
             this.opts,
           );
@@ -57,13 +43,7 @@ function runTests() {
 
         it("decreases the stream balance", async function () {
           const balance = await this.sablier.balanceOf(this.streamId, this.recipient, this.opts);
-          await this.sablier.withdrawFromStreamAndStake(
-            this.streamId,
-            withdrawalAmount,
-            this.timeLockPool.address,
-            this.duration,
-            this.opts,
-          );
+          await this.sablier.withdrawFromStreamAndStake(this.streamId, withdrawalAmount, this.duration, this.opts);
           const newBalance = await this.sablier.balanceOf(this.streamId, this.recipient, this.opts);
           // Intuitively, one may say we don't have to tolerate the block time variation here.
           // However, the Sablier balance for the recipient can only go up from the bottom
@@ -77,13 +57,7 @@ function runTests() {
 
         it("reverts", async function () {
           await truffleAssert.reverts(
-            this.sablier.withdrawFromStreamAndStake(
-              this.streamId,
-              withdrawalAmount,
-              this.timeLockPool.address,
-              this.duration,
-              this.opts,
-            ),
+            this.sablier.withdrawFromStreamAndStake(this.streamId, withdrawalAmount, this.duration, this.opts),
             "amount exceeds the available balance",
           );
         });
@@ -97,13 +71,7 @@ function runTests() {
 
           it("withdraws from the stream", async function () {
             const balance = await this.token.balanceOf(this.recipient);
-            await this.sablier.withdrawFromStreamAndStake(
-              this.streamId,
-              withdrawalAmount,
-              this.timeLockPool.address,
-              this.duration,
-              this.opts,
-            );
+            await this.sablier.withdrawFromStreamAndStake(this.streamId, withdrawalAmount, this.duration, this.opts);
             const newBalance = await this.token.balanceOf(this.recipient);
             newBalance.should.be.bignumber.equal(balance);
 
@@ -118,7 +86,6 @@ function runTests() {
             const result = await this.sablier.withdrawFromStreamAndStake(
               this.streamId,
               withdrawalAmount,
-              this.timeLockPool.address,
               this.duration,
               this.opts,
             );
@@ -130,7 +97,7 @@ function runTests() {
             await this.sablier.withdrawFromStreamAndStake(
               this.streamId,
               withdrawalAmount,
-              this.timeLockPool.address,
+
               this.duration,
               this.opts,
             );
@@ -150,13 +117,7 @@ function runTests() {
 
           it("withdraws from the stream", async function () {
             const balance = await this.token.balanceOf(this.recipient);
-            await this.sablier.withdrawFromStreamAndStake(
-              this.streamId,
-              withdrawalAmount,
-              this.timeLockPool.address,
-              this.duration,
-              this.opts,
-            );
+            await this.sablier.withdrawFromStreamAndStake(this.streamId, withdrawalAmount, this.duration, this.opts);
 
             const newBalance = await this.token.balanceOf(this.recipient);
             newBalance.should.be.bignumber.equal(balance);
@@ -172,7 +133,6 @@ function runTests() {
             const result = await this.sablier.withdrawFromStreamAndStake(
               this.streamId,
               withdrawalAmount,
-              this.timeLockPool.address,
               this.duration,
               this.opts,
             );
@@ -180,13 +140,7 @@ function runTests() {
           });
 
           it("deletes the stream object", async function () {
-            await this.sablier.withdrawFromStreamAndStake(
-              this.streamId,
-              withdrawalAmount,
-              this.timeLockPool.address,
-              this.duration,
-              this.opts,
-            );
+            await this.sablier.withdrawFromStreamAndStake(this.streamId, withdrawalAmount, this.duration, this.opts);
             await truffleAssert.reverts(this.sablier.getStream(this.streamId), "stream does not exist");
           });
         });
@@ -197,13 +151,7 @@ function runTests() {
 
         it("reverts", async function () {
           await truffleAssert.reverts(
-            this.sablier.withdrawFromStreamAndStake(
-              this.streamId,
-              withdrawalAmount,
-              this.timeLockPool.address,
-              this.duration,
-              this.opts,
-            ),
+            this.sablier.withdrawFromStreamAndStake(this.streamId, withdrawalAmount, this.duration, this.opts),
             "amount exceeds the available balance",
           );
         });
@@ -216,13 +164,7 @@ function runTests() {
 
     it("reverts", async function () {
       await truffleAssert.reverts(
-        this.sablier.withdrawFromStreamAndStake(
-          this.streamId,
-          withdrawalAmount,
-          this.timeLockPool.address,
-          this.duration,
-          this.opts,
-        ),
+        this.sablier.withdrawFromStreamAndStake(this.streamId, withdrawalAmount, this.duration, this.opts),
         "amount is zero",
       );
     });
@@ -245,7 +187,7 @@ function shouldBehaveLikeERC1620WithdrawFromStreamAndStake(alice, bob, eve) {
       const opts = { from: this.sender };
 
       await this.token.approve(this.sablier.address, this.deposit, opts);
-      // await this.token.approve(this.timeLockPool.address, FIVE_UNITS.toString(10), { from: this.recipient });
+      // await this.token.approve( FIVE_UNITS.toString(10), { from: this.recipient });
 
       const result = await this.sablier.createStream(
         this.recipient,
@@ -293,7 +235,7 @@ function shouldBehaveLikeERC1620WithdrawFromStreamAndStake(alice, bob, eve) {
     it("reverts", async function () {
       const streamId = new BigNumber(419863);
       await truffleAssert.reverts(
-        this.sablier.withdrawFromStreamAndStake(streamId, FIVE_UNITS, ZERO_ADDRESS, 6, opts),
+        this.sablier.withdrawFromStreamAndStake(streamId, FIVE_UNITS, 6, opts),
         "stream does not exist",
       );
     });
