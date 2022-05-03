@@ -6,32 +6,37 @@ const shouldBehaveLikeERC1620CreateStream = require("./effects/stream/CreateStre
 const shouldBehaveLikeERC1620WithdrawFromStream = require("./effects/stream/WithdrawFromStream");
 // eslint-disable-next-line max-len
 const shouldBehaveLikeERC1620CancelStream = require("./effects/stream/CancelStream");
+const shouldBehaveLikeERC1620WithdrawFromStreamAndStake = require("./effects/stream/WithdrawFromStreamAndStake");
 
 function shouldBehaveLikeSablier(alice, bob, carol, eve) {
-  describe("view functions", function() {
-    describe("getStream", function() {
+  describe("view functions", function () {
+    describe("getStream", function () {
       shouldBehaveLikeGetStream(alice);
     });
 
-    describe("deltaOf", function() {
+    describe("deltaOf", function () {
       shouldBehaveLikeDeltaOf(alice, bob);
     });
 
-    describe("balanceOf", function() {
+    describe("balanceOf", function () {
       shouldBehaveLikeBalanceOf(alice, bob, carol);
     });
   });
 
-  describe("effects & interactions functions", function() {
-    describe("createStream", function() {
+  describe("effects & interactions functions", function () {
+    describe("createStream", function () {
       shouldBehaveLikeERC1620CreateStream(alice, bob);
     });
 
-    describe("withdrawFromStream", function() {
+    describe("withdrawFromStream", function () {
       shouldBehaveLikeERC1620WithdrawFromStream(alice, bob, eve);
     });
 
-    describe("cancelStream", function() {
+    describe("withdrawFromStreamAndStake", function () {
+      shouldBehaveLikeERC1620WithdrawFromStreamAndStake(alice, bob, eve);
+    });
+
+    describe("cancelStream", function () {
       shouldBehaveLikeERC1620CancelStream(alice, bob, eve);
     });
   });
