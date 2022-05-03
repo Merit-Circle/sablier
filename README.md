@@ -20,6 +20,12 @@ $ truffle compile --all
 $ truffle migrate --reset --network development
 ```
 
+To verify the smart contracts on etherscan run the following in the `packages/protocol` folder:
+
+```bash
+npx truffle run verify Sablier --network rinkeby
+```
+
 Alternatively, if you simply want to use our apps, head to [pay.sablier.finance](https://pay.sablier.finance) to create streams and
 [app.sablier.finance](https://app.sablier.finance) to withdraw from streams. You'll need an Ethereum wallet and some ERC20 tokens.
 
