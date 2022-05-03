@@ -53,8 +53,8 @@ contract Sablier is ISablier, ReentrancyGuard, CarefulMath, Ownable {
      */
     modifier onlyRecipient(uint256 streamId) {
         require(
-            msg.sender == streams[streamId].sender || msg.sender == streams[streamId].recipient,
-            "caller is not the sender or the recipient of the stream"
+            msg.sender == streams[streamId].recipient,
+            "caller is not the recipient of the stream"
         );
         _;
     }
