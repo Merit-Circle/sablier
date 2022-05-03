@@ -3,6 +3,7 @@ pragma solidity =0.5.17;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "@sablier/shared-contracts/compound/CarefulMath.sol";
 
 import "./interfaces/ISablier.sol";
@@ -14,7 +15,7 @@ import "./Types.sol";
  * @author Sablier
  * @notice Money streaming.
  */
-contract Sablier is ISablier, ReentrancyGuard, CarefulMath {
+contract Sablier is ISablier, ReentrancyGuard, CarefulMath, Ownable {
     using SafeERC20 for IERC20;
 
     /*** Storage Properties ***/
@@ -28,6 +29,11 @@ contract Sablier is ISablier, ReentrancyGuard, CarefulMath {
      * @notice The stream objects identifiable by their unsigned integer ids.
      */
     mapping(uint256 => Types.Stream) private streams;
+
+    /**
+     * @notice Address of the staking pool
+     */
+    ITimeLockPool public stakingPool;
 
     /*** Modifiers ***/
 
@@ -47,8 +53,8 @@ contract Sablier is ISablier, ReentrancyGuard, CarefulMath {
      */
     modifier onlyRecipient(uint256 streamId) {
         require(
-            msg.sender == streams[streamId].sender || msg.sender == streams[streamId].recipient,
-            "caller is not the sender or the recipient of the stream"
+            msg.sender == streams[streamId].recipient,
+            "caller is not the recipient of the stream"
         );
         _;
     }
@@ -285,7 +291,7 @@ contract Sablier is ISablier, ReentrancyGuard, CarefulMath {
      * @param amount The amount of tokens to withdraw.
      * @param duration Duration of stake
      */
-    function withdrawFromStreamAndStake(uint256 streamId, uint256 amount, address pool, uint256 duration, address receiver)
+    function withdrawFromStreamAndStake(uint256 streamId, uint256 amount, uint256 duration)
         external
         nonReentrant
         streamExists(streamId)
@@ -308,8 +314,8 @@ contract Sablier is ISablier, ReentrancyGuard, CarefulMath {
 
         if (streams[streamId].remainingBalance == 0) delete streams[streamId];
 
-        IERC20(stream.tokenAddress).approve(pool, amount);
-        ITimeLockPool(pool).deposit(amount, duration, receiver);
+        IERC20(stream.tokenAddress).approve(address(stakingPool), amount);
+        stakingPool.deposit(amount, duration, stream.recipient);
 
         emit WithdrawFromStream(streamId, stream.recipient, amount);
         return true;
@@ -342,5 +348,15 @@ contract Sablier is ISablier, ReentrancyGuard, CarefulMath {
 
         emit CancelStream(streamId, stream.sender, stream.recipient, senderBalance, recipientBalance);
         return true;
+    }
+
+
+    /**
+     * @notice Update the staking pool address
+     * @dev throws if called by non owner
+     * @param newStakingPool Address of the new staking pool
+     */
+    function setStakingPool(address newStakingPool) external onlyOwner {
+        stakingPool = ITimeLockPool(newStakingPool);
     }
 }
