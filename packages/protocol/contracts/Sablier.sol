@@ -196,6 +196,7 @@ contract Sablier is ISablier, ReentrancyGuard, CarefulMath, Ownable {
      */
     function createStream(address recipient, uint256 deposit, address tokenAddress, uint256 startTime, uint256 stopTime)
         public
+        onlyOwner
         returns (uint256)
     {
         require(recipient != address(0x00), "stream to the zero address");
